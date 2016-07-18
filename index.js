@@ -15,10 +15,10 @@ document.body.style.margin = '0';
 canvas.style.display = 'block';
 document.body.appendChild(canvas);
 
-// const audioSrc = 'assets/audio/31 First Light.mp3';
-// const imgSrc = 'assets/image/monroe.jpg';
+const imgSrc = 'assets/image/monroe.jpg';
 const videoSrc = 'assets/video/budapest_2.mp4';
-const audioSrc = 'assets/video/budapest_2.mp4';
+// const audioSrc = 'assets/video/budapest_2.mp4';
+const audioSrc = 'assets/audio/31 First Light.mp3';
 const OfflineAudioCtx = window.OfflineAudioContext || window.webkitOfflineAudioContext;
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
 
@@ -99,13 +99,16 @@ function render (img, audioData, binCount) {
     lowest = Math.min(lowest, audioData[i] / 255);
   }
   sum /= audioData.length;
-
-  const sliceWidth = 0.085;
-  const gapWidth = 0.085;
+  
+  const TO_RADIANS = Math.PI / 180; 
+  const sliceWidth = 0.85;
+  const gapWidth = 0.5;
   const smallGapWidth = (imgWidth * 0.5) / audioData.length;
   let curX = x;
+  let angle = 0;
+
   for (let i = 0; i < audioData.length; i++) {
-    const xpos = curX;
+    let xpos = curX;
     const n = (audioData[i] / 255) * 2 - 1;
     let t = Math.abs(n);
     // const srcX = (xpos + t * width * gapWidth) % img.width;
@@ -116,8 +119,13 @@ function render (img, audioData, binCount) {
     const srcSliceHeight = t * imgHeight;
     const srcSliceY = (imgHeight - srcSliceHeight) / 2;
     ctx.globalAlpha = 0.1
+    
+    xpos = xpos % 150; // make it loop
+    ctx.rotate( angle * TO_RADIANS ); // roatate it a bit :) 
+    
     ctx.drawImage(img, srcX, srcSliceY, sliceWidth, srcSliceHeight, xpos, sliceY, sliceWidth, sliceHeight);
     curX += smallGapWidth;
+    angle += 0.01;
   }
   x += gapWidth;
   // if (x > width) x = 0;
